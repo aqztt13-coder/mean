@@ -1,0 +1,6 @@
+import { neon } from '@neondatabase/serverless';
+
+// يقرأ الرابط تلقائياً من متغيرات البيئة في Vercel
+const sql = neon(process.env.DATABASE_URL);
+
+export default sql;

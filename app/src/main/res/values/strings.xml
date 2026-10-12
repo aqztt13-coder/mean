@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">دليل أطباء البصرة</string>
+    <string name="app_subtitle">دليل أطباء محافظة البصرة</string>
+    <string name="home_title">ابحث عن طبيبك بسهولة</string>
+    <string name="search_hint">أدخل الاسم الثلاثي للطبيب</string>
+    <string name="search_button">بحث</string>
+    <string name="clear_text">مسح</string>
+    <string name="specialties_header">التخصصات الطبية</string>
+    <string name="governorates_header">المحافظات والمدن</string>
+    <string name="empty_doctors_message">لم تتم إضافة بيانات الأطباء حتى الآن</string>
+    <string name="no_search_results">لا توجد نتائج مطابقة لبحثك</string>
+    <string name="favorites_title">الأطباء المفضّلون</string>
+    <string name="about_title">حول التطبيق ومصدر البيانات</string>
+    <string name="admin_panel_title">إدارة التطبيق — Admin Panel</string>
+    <string name="upload_excel_button">رفع ملف Excel</string>
+    <string name="server_status_connected">الخادم متصل</string>
+    <string name="server_status_offline">الخادم غير متصل — استخدام البيانات المحلية المؤقتة</string>
+</resources>

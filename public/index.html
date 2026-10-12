@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>دليل أطباء البصرة | Basra Doctors Directory</title>
+  <meta name="description" content="الدليل الطبي الشامل للبحث عن الأطباء والعيادات الاستشارية في محافظة البصرة بالاسم والاختصاص والمنطقة مع الاتصال والواتساب ومواقع الخرائط.">
+  <meta name="keywords" content="أطباء البصرة, دليل أطباء البصرة, عيادات البصرة, حجز موعد طبيب البصرة, دكتور في البصرة, العشار, الجبيلة, الجزائر">
+  <meta name="author" content="دليل أطباء البصرة">
+
+  <!-- Open Graph / Social Meta -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="دليل أطباء البصرة — Basra Doctors Directory">
+  <meta property="og:description" content="ابحث عن أطباء محافظة البصرة بسهولة وتواصل معهم مباشرة عبر الهاتف والواتساب والخرائط.">
+  <meta property="og:locale" content="ar_IQ">
+
+  <!-- Schema.org Medical Directory Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "MedicalWebPage",
+    "name": "دليل أطباء البصرة",
+    "description": "دليل شامل ومحدّث للبحث عن الأطباء في محافظة البصرة، العراق.",
+    "about": {
+      "@type": "Physician",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Basra",
+        "addressRegion": "Basra Governorate",
+        "addressCountry": "IQ"
+      }
+    }
+  }
+  </script>
+
+  <!-- Google Fonts: Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              200: '#99f6e4',
+              300: '#5eead4',
+              400: '#2dd4bf',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            },
+            medical: {
+              blue: '#0284c7',
+              dark: '#0f172a',
+              light: '#f8fafc',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- Leaflet CSS & JS for OpenStreetMap -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(0,0,0,0.05);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(13, 148, 136, 0.4);
+      border-radius: 9999px;
+    }
+    #clinic-map {
+      height: 380px;
+      width: 100%;
+      border-radius: 0.75rem;
+    }
+    .leaflet-popup-content-wrapper {
+      direction: rtl;
+      text-align: right;
+      font-family: 'Cairo', sans-serif;
+      border-radius: 0.75rem;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-50 text-slate-800 dark:bg-slate-900 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-200">
+
+  <!-- ==================== HEADER ==================== -->
+  <header class="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between h-20">
+        <!-- Logo & Title -->
+        <a href="/" class="flex items-center gap-3 group">
+          <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-primary-700 via-primary-600 to-teal-400 flex items-center justify-center text-white shadow-md shadow-primary-500/20 group-hover:scale-105 transition-transform">
+            <!-- Medical Palm / Stethoscope Icon -->
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v4m-2-2h4"/>
+            </svg>
+          </div>
+          <div>
+            <h1 class="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              دليل أطباء البصرة
+              <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-300 border border-primary-300 dark:border-primary-800">البصرة</span>
+            </h1>
+            <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">Basra Doctors Directory</p>
+          </div>
+        </a>
+
+        <!-- Desktop Navigation & Actions -->
+        <nav class="hidden md:flex items-center gap-6">
+          <a href="#search-section" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">الرئيسية</a>
+          <a href="#specialties-section" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">الاختصاصات</a>
+          <a href="#about-section" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">عن الدليل</a>
+          <a href="#contact-section" class="text-sm font-semibold text-slate-700 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">اتصل بنا</a>
+        </nav>
+
+        <div class="flex items-center gap-3">
+          <!-- Dark Mode Toggle -->
+          <button id="theme-toggle" type="button" aria-label="تبديل المظهر الداكن" class="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+            <!-- Sun Icon -->
+            <svg id="theme-icon-light" class="w-5 h-5 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <!-- Moon Icon -->
+            <svg id="theme-icon-dark" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+          </button>
+
+          <!-- Admin Portal Link -->
+          <a href="/admin" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-900 text-white hover:bg-slate-800 dark:bg-slate-800 dark:text-slate-100 dark:hover:bg-slate-700 border border-slate-700 shadow-sm transition-all">
+            <svg class="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+            </svg>
+            <span class="hidden sm:inline">لوحة الإدارة</span>
+            <span class="sm:hidden">أدمن</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== HERO SECTION ==================== -->
+  <section id="search-section" class="relative overflow-hidden bg-gradient-to-b from-primary-50/70 via-slate-50 to-white dark:from-slate-950 dark:via-slate-900 dark:to-slate-900 py-12 sm:py-16 border-b border-slate-200 dark:border-slate-800">
+    <!-- Decorative background elements -->
+    <div class="absolute inset-0 pointer-events-none opacity-40 dark:opacity-20">
+      <div class="absolute -top-24 -left-24 w-96 h-96 rounded-full bg-primary-200 blur-3xl"></div>
+      <div class="absolute top-1/2 -right-24 w-96 h-96 rounded-full bg-sky-200 blur-3xl"></div>
+    </div>
+
+    <div class="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary-100 text-primary-800 dark:bg-primary-950/80 dark:text-primary-300 border border-primary-200 dark:border-primary-800 text-xs sm:text-sm font-semibold mb-6 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-primary-600 animate-pulse"></span>
+        دليل أطباء محافظة البصرة المعتمد — بحث مباشر وتواصل فوري
+      </div>
+
+      <!-- Title -->
+      <h2 class="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight mb-4">
+        ابحث عن أفضل الأطباء والعيادات في <span class="text-primary-600 dark:text-primary-400 underline decoration-primary-300 underline-offset-8">البصرة</span>
+      </h2>
+      <p class="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto mb-8 font-normal leading-relaxed">
+        ابحث بالاسم، الاختصاص، المنطقة أو اسم العيادة. تواصل مباشرة عبر الاتصال، الواتساب، واعرف موقع العيادة الجغرافي على الخريطة.
+      </p>
+
+      <!-- Prominent Live Search Box -->
+      <div class="max-w-3xl mx-auto relative bg-white dark:bg-slate-800 p-2 sm:p-3 rounded-2xl sm:rounded-3xl shadow-xl shadow-slate-200/50 dark:shadow-black/40 border border-slate-200 dark:border-slate-700">
+        <div class="flex items-center gap-3 px-3 py-2">
+          <!-- Search Icon -->
+          <div class="text-primary-600 dark:text-primary-400 flex-shrink-0">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+            </svg>
+          </div>
+
+          <!-- Input -->
+          <input
+            id="search-input"
+            type="text"
+            dir="rtl"
+            placeholder="ابحث باسم الطبيب، الاختصاص، العيادة أو المنطقة (مثال: عظام، العشار، د. أحمد)..."
+            class="w-full bg-transparent border-none text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-0 text-base sm:text-lg font-medium"
+            autocomplete="off"
+          />
+
+          <!-- Clear Button -->
+          <button
+            id="clear-search-btn"
+            type="button"
+            class="hidden text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition"
+            aria-label="مسح البحث"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+
+          <!-- Search submit visual button -->
+          <button
+            id="search-trigger-btn"
+            type="button"
+            class="hidden sm:inline-flex items-center gap-1.5 px-6 py-3 rounded-xl sm:rounded-2xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-md shadow-primary-600/30 transition-all flex-shrink-0"
+          >
+            بحث
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Search hints and status -->
+      <div class="mt-3 flex items-center justify-center gap-2 text-xs text-slate-500 dark:text-slate-400">
+        <span>💡 البحث فوري ويعمل تلقائياً مع مراعاة الفروقات الإملائية والهمزات العربية.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== SPECIALTIES SECTION ==================== -->
+  <section id="specialties-section" class="py-8 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-base sm:text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+          <span>🩺 الاختصاصات الشائعة</span>
+          <span class="text-xs text-slate-500 font-normal hidden sm:inline">(اضغط لفلترة النتائج مباشرة)</span>
+        </h3>
+        <button id="reset-specialty-btn" class="text-xs font-semibold text-primary-600 hover:underline">عرض كل الاختصاصات</button>
+      </div>
+
+      <!-- Specialty Pills Carousel/Flex -->
+      <div id="specialties-container" class="flex items-center gap-2.5 overflow-x-auto pb-2 custom-scrollbar">
+        <!-- Will be populated dynamically via JavaScript or fallback to defaults -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== MAIN CONTENT (RESULTS & FILTERS) ==================== -->
+  <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+    <!-- Filters Toolbar -->
+    <div class="bg-white dark:bg-slate-800 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-700 mb-6">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+        <!-- Results Counter & Active Query -->
+        <div class="flex items-center gap-2">
+          <span id="results-count-badge" class="px-3 py-1 rounded-xl bg-primary-100 text-primary-800 dark:bg-primary-950 dark:text-primary-300 text-xs sm:text-sm font-bold border border-primary-200 dark:border-primary-800">
+            جاري التحميل...
+          </span>
+          <span id="active-filter-indicator" class="text-xs text-slate-500 dark:text-slate-400 hidden"></span>
+        </div>
+
+        <!-- Filter Dropdowns (Specialty & Area) -->
+        <div class="flex flex-wrap sm:flex-nowrap items-center gap-3">
+          <!-- Specialty Select -->
+          <div class="w-full sm:w-auto min-w-[160px]">
+            <label for="filter-specialty" class="sr-only">الاختصاص</label>
+            <select
+              id="filter-specialty"
+              class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="الكل">كل الاختصاصات</option>
+            </select>
+          </div>
+
+          <!-- Area Select (Basra Districts) -->
+          <div class="w-full sm:w-auto min-w-[160px]">
+            <label for="filter-area" class="sr-only">المنطقة</label>
+            <select
+              id="filter-area"
+              class="w-full bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-xl px-3 py-2 text-xs sm:text-sm font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-primary-500"
+            >
+              <option value="الكل">جميع مناطق البصرة</option>
+            </select>
+          </div>
+
+          <!-- Reset All Filters Button -->
+          <button
+            id="reset-all-filters-btn"
+            type="button"
+            class="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition"
+          >
+            إعادة الضبط
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Doctors Cards Container / Grid -->
+    <div id="doctors-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Loading Skeleton Cards -->
+      <div class="animate-pulse bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+        <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-md w-3/4 mb-3"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-1/2 mb-4"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-full mb-2"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-2/3 mb-6"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+        </div>
+      </div>
+      <div class="animate-pulse bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+        <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-md w-3/4 mb-3"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-1/2 mb-4"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-full mb-2"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-2/3 mb-6"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+        </div>
+      </div>
+      <div class="animate-pulse bg-white dark:bg-slate-800 rounded-2xl p-6 border border-slate-200 dark:border-slate-700">
+        <div class="h-6 bg-slate-200 dark:bg-slate-700 rounded-md w-3/4 mb-3"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-1/2 mb-4"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-full mb-2"></div>
+        <div class="h-4 bg-slate-200 dark:bg-slate-700 rounded-md w-2/3 mb-6"></div>
+        <div class="grid grid-cols-2 gap-2">
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+          <div class="h-10 bg-slate-200 dark:bg-slate-700 rounded-xl"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State Container (Hidden by default) -->
+    <div id="empty-state" class="hidden text-center py-16 px-4 bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm max-w-2xl mx-auto my-6">
+      <div class="w-20 h-20 mx-auto rounded-3xl bg-primary-50 dark:bg-slate-700/60 flex items-center justify-center text-primary-600 dark:text-primary-400 mb-5">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+        </svg>
+      </div>
+      <h3 id="empty-state-title" class="text-2xl font-black text-slate-900 dark:text-white mb-2">لا توجد بيانات حالياً</h3>
+      <p id="empty-state-desc" class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">
+        لم تتم إضافة بيانات الأطباء في الدليل حتى الآن. يمكنك رفع ملف Excel من لوحة الإدارة لإظهار البيانات فوراً.
+      </p>
+      <div id="empty-state-actions" class="flex flex-wrap items-center justify-center gap-3">
+        <a href="/admin" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-md transition">
+          الانتقال إلى لوحة الإدارة لرفع الملف
+        </a>
+      </div>
+    </div>
+
+    <!-- Load More / Pagination Container -->
+    <div id="load-more-container" class="mt-8 text-center hidden">
+      <button
+        id="load-more-btn"
+        type="button"
+        class="inline-flex items-center gap-2 px-8 py-3 rounded-2xl bg-white dark:bg-slate-800 text-primary-600 dark:text-primary-400 border border-primary-200 dark:border-primary-800 hover:bg-primary-50 dark:hover:bg-slate-700 font-bold text-sm shadow-sm transition"
+      >
+        <span>تحميل المزيد من الأطباء</span>
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+        </svg>
+      </button>
+    </div>
+  </main>
+
+  <!-- ==================== ABOUT SECTION ==================== -->
+  <section id="about-section" class="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-800 py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-primary-600 dark:text-primary-400">عن الدليل</span>
+          <h2 class="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white mt-1 mb-4">
+            خدمة مجانية لخدمة أهالي محافظة البصرة
+          </h2>
+          <p class="text-slate-600 dark:text-slate-300 text-sm sm:text-base leading-relaxed mb-4">
+            "دليل أطباء البصرة" هو منصة رقمية مستقلة تهدف إلى تسهيل وصول المواطنين إلى عيادات واستشاريي الطب في محافظة البصرة بمختلف مناطقها (العشار، الجبيلة، الجزائر، الطويسة، المعقل، الزبير، القرنة وغيرها).
+          </p>
+          <ul class="space-y-3 text-sm text-slate-600 dark:text-slate-300">
+            <li class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>تحديث دوري لبيانات العيادات وأرقام الحجز وأوقات الدوام.</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>اتصال هاتفي مباشر وواتساب بروابط رسمية سريعة.</span>
+            </li>
+            <li class="flex items-center gap-2">
+              <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>تحديد مواقع العيادات على خرائط OpenStreetMap وGoogle Maps.</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="bg-gradient-to-br from-primary-50 to-teal-50 dark:from-slate-900 dark:to-slate-800 p-8 rounded-3xl border border-primary-100 dark:border-slate-700 shadow-sm">
+          <h3 class="text-lg font-bold text-slate-900 dark:text-white mb-3">هل أنت طبيب وترغب بتحديث بياناتك؟</h3>
+          <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-300 leading-relaxed mb-6">
+            يمكن للمسؤول في العيادة أو الطبيب طلب إضافة أو تعديل البيانات عبر إرسال التفاصيل لإدارة الدليل أو من خلال لوحة الإدارة المخصصة.
+          </p>
+          <a href="#contact-section" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-xs sm:text-sm shadow-sm transition">
+            <span>تواصل مع الدعم الفني</span>
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== CONTACT / FOOTER SECTION ==================== -->
+  <footer id="contact-section" class="bg-slate-900 text-slate-400 py-12 border-t border-slate-800">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+        <div>
+          <h4 class="text-white text-base font-bold mb-3 flex items-center gap-2">
+            <span>دليل أطباء البصرة</span>
+          </h4>
+          <p class="text-xs sm:text-sm leading-relaxed text-slate-400">
+            دليل مجتمعي للبحث عن الأطباء والعيادات في محافظة البصرة، العراق. مصمم بواجهة حديثة لدعم المرضى والمراجعين في الوصول السريع للرعاية الطبية.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white text-base font-bold mb-3">مناطق البصرة المغطاة</h4>
+          <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">
+            العشار، الجبيلة، الجزائر، الطويسة، المعقل، بريهة، الخورة، الزبير، القرنة، أبو الخصيب، الهارثة، شط العرب، دور النفط، وكافة أقضية ونواحي محافظة البصرة.
+          </p>
+        </div>
+
+        <div>
+          <h4 class="text-white text-base font-bold mb-3">إخلاء مسؤولية مهم</h4>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            المعلومات الواردة في هذا الدليل مأخوذة من سجلات الأطباء وبيانات العيادات المعلنة للاسترشاد. يُرجى الاتصال المسبق بالعيادة لتأكيد مواعيد الحجز ورسوم الكشف وأيام الاستقبال.
+          </p>
+        </div>
+      </div>
+
+      <div class="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between text-xs gap-4">
+        <div>
+          © 2026 دليل أطباء البصرة (Basra Doctors Directory) — جميع الحقوق محفوظة.
+        </div>
+        <div class="flex items-center gap-4">
+          <a href="/admin" class="hover:text-white transition">دخول المسؤول (Admin)</a>
+          <a href="#" class="hover:text-white transition">للأعلى ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ==================== LEAFLET MAP MODAL ==================== -->
+  <div id="map-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-sm hidden" role="dialog" aria-modal="true">
+    <div class="relative bg-white dark:bg-slate-800 rounded-3xl shadow-2xl max-w-2xl w-full p-6 overflow-hidden border border-slate-200 dark:border-slate-700 animate-in fade-in duration-200">
+      <!-- Modal Header -->
+      <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-700 mb-4">
+        <div>
+          <h3 id="map-modal-doc-name" class="text-lg font-black text-slate-900 dark:text-white">موقع العيادة على الخريطة</h3>
+          <p id="map-modal-address" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">البصرة</p>
+        </div>
+        <button id="close-map-btn" type="button" class="p-2 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 transition" aria-label="إغلاق الخريطة">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <!-- Map Container -->
+      <div class="relative">
+        <div id="clinic-map"></div>
+        <div id="map-loading" class="absolute inset-0 bg-white/80 dark:bg-slate-800/80 backdrop-blur-xs flex items-center justify-center gap-2 text-primary-600 dark:text-primary-400 font-bold text-sm hidden">
+          <svg class="w-6 h-6 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" class="opacity-75"></path></svg>
+          <span>جاري تحديد موقع العيادة الجغرافي...</span>
+        </div>
+      </div>
+
+      <!-- External Map Actions -->
+      <div class="mt-4 pt-3 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 dark:border-slate-700">
+        <span class="text-xs text-slate-500 dark:text-slate-400">مزود الخريطة: OpenStreetMap + Leaflet (مجاني)</span>
+        <div class="flex items-center gap-2">
+          <a id="open-google-maps-btn" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-100 text-xs font-bold transition">
+            <svg class="w-4 h-4 text-rose-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span>فتح في خرائط Google</span>
+          </a>
+          <a id="get-directions-btn" href="#" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-sm transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            <span>الاتجاهات للعيادة</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 max-w-sm bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl transform translate-y-20 opacity-0 transition-all duration-300 flex items-center gap-3 text-xs sm:text-sm font-semibold pointer-events-none">
+    <svg id="toast-icon" class="w-5 h-5 text-emerald-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    <span id="toast-message">تم النسخ بنجاح</span>
+  </div>
+
+  <!-- Main JavaScript Logic -->
+  <script>
+    // State management
+    const state = {
+      doctors: [],
+      specialties: [],
+      areas: [],
+      selectedSpecialty: 'الكل',
+      selectedArea: 'الكل',
+      searchQuery: '',
+      page: 1,
+      limit: 24,
+      totalCount: 0,
+      leafletMap: null,
+      activeMarker: null,
+      geocodeCache: {}
+    };
+
+    // Default Basra specialty icons mapping
+    const SPECIALTY_ICONS = {
+      'قلب': '❤️',
+      'عظام': '🦴',
+      'عيون': '👁️',
+      'باطنية': '🩺',
+      'أطفال': '👶',
+      'اطفال': '👶',
+      'أسنان': '🦷',
+      'اسنان': '🦷',
+      'جلدية': '✨',
+      'نسائية': '🌸',
+      'أنف': '👂',
+      'انف': '👂',
+      'أعصاب': '🧠',
+      'اعصاب': '🧠',
+      'جراحة': '✂️',
+      'كلى': '💧',
+      'مسالك': '💧',
+      'أورام': '🎗️',
+      'اورام': '🎗️',
+      'طب عام': '👨‍⚕️'
+    };
+
+    function getSpecialtyIcon(spec) {
+      if (!spec) return '🩺';
+      for (const [key, icon] of Object.entries(SPECIALTY_ICONS)) {
+        if (spec.includes(key)) return icon;
+      }
+      return '🩺';
+    }
+
+    // Theme Management (Dark / Light)
+    function initTheme() {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const lightIcon = document.getElementById('theme-icon-light');
+      const darkIcon = document.getElementById('theme-icon-dark');
+
+      const isDark = localStorage.getItem('theme') === 'dark' ||
+        (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+      if (isDark) {
+        document.documentElement.classList.add('dark');
+        lightIcon.classList.remove('hidden');
+        darkIcon.classList.add('hidden');
+      } else {
+        document.documentElement.classList.remove('dark');
+        lightIcon.classList.add('hidden');
+        darkIcon.classList.remove('hidden');
+      }
+
+      toggleBtn.addEventListener('click', () => {
+        const currentlyDark = document.documentElement.classList.contains('dark');
+        if (currentlyDark) {
+          document.documentElement.classList.remove('dark');
+          localStorage.setItem('theme', 'light');
+          lightIcon.classList.add('hidden');
+          darkIcon.classList.remove('hidden');
+        } else {
+          document.documentElement.classList.add('dark');
+          localStorage.setItem('theme', 'dark');
+          lightIcon.classList.remove('hidden');
+          darkIcon.classList.add('hidden');
+        }
+      });
+    }
+
+    // Toast feedback
+    function showToast(message, isError = false) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toast-message');
+      const toastIcon = document.getElementById('toast-icon');
+
+      toastMsg.textContent = message;
+      if (isError) {
+        toastIcon.classList.remove('text-emerald-400');
+        toastIcon.classList.add('text-rose-400');
+      } else {
+        toastIcon.classList.add('text-emerald-400');
+        toastIcon.classList.remove('text-rose-400');
+      }
+
+      toast.classList.remove('translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.add('translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3000);
+    }
+
+    // Fetch Directory Metadata (Summary, Specialties, Areas)
+    async function fetchMetadata() {
+      try {
+        const res = await fetch('/api/doctors/meta/summary');
+        const data = await res.json();
+
+        state.specialties = data.specialties || [];
+        state.areas = data.defaultBasraAreas || [];
+
+        populateSpecialtiesUI();
+        populateFilterDropdowns();
+      } catch (err) {
+        console.warn('Could not load metadata:', err);
+      }
+    }
+
+    // Render Specialty Pills in Carousel
+    function populateSpecialtiesUI() {
+      const container = document.getElementById('specialties-container');
+      container.innerHTML = '';
+
+      // Default common specialties for fast access
+      const prominent = [
+        'جراحة العظام والكسور',
+        'طب وجراحة العيون',
+        'أمراض القلب والقسطرة',
+        'الأمراض الباطنية',
+        'الأطفال وحديثي الولادة',
+        'طب وجراحة الفم والأسنان',
+        'الأمراض الجلدية والتناسلية',
+        'أمراض النساء والتوليد',
+        'أنف وأذن وحنجرة',
+        'المخ والأعصاب',
+        'الجراحة العامة'
+      ];
+
+      // Merge prominent with existing in DB
+      const list = Array.from(new Set([...prominent, ...state.specialties])).slice(0, 15);
+
+      list.forEach((spec) => {
+        const icon = getSpecialtyIcon(spec);
+        const pill = document.createElement('button');
+        pill.type = 'button';
+        pill.className = `flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs sm:text-sm font-bold border transition ${
+          state.selectedSpecialty === spec
+            ? 'bg-primary-600 text-white border-primary-600 shadow-md shadow-primary-600/30'
+            : 'bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:border-primary-400 hover:bg-primary-50 dark:hover:bg-slate-700'
+        }`;
+        pill.innerHTML = `<span>${icon}</span><span>${spec}</span>`;
+        pill.addEventListener('click', () => {
+          if (state.selectedSpecialty === spec) {
+            state.selectedSpecialty = 'الكل';
+          } else {
+            state.selectedSpecialty = spec;
+          }
+          document.getElementById('filter-specialty').value = state.selectedSpecialty;
+          populateSpecialtiesUI();
+          fetchDoctors();
+        });
+        container.appendChild(pill);
+      });
+    }
+
+    // Populate Filters Dropdowns
+    function populateFilterDropdowns() {
+      const specSelect = document.getElementById('filter-specialty');
+      const areaSelect = document.getElementById('filter-area');
+
+      // Specialty options
+      specSelect.innerHTML = '<option value="الكل">كل الاختصاصات</option>';
+      state.specialties.forEach((s) => {
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = s;
+        specSelect.appendChild(opt);
+      });
+
+      // Area options
+      areaSelect.innerHTML = '<option value="الكل">جميع مناطق البصرة</option>';
+      const basraAreas = [
+        'العشار', 'الجبيلة', 'الجزائر', 'الطويسة', 'المعقل', 'بريهة', 'الخورة',
+        'الزبير', 'القرنة', 'أبو الخصيب', 'الهارثة', 'كرمة علي', 'شط العرب',
+        'دور النفط', 'التحسينية', 'مناوي باشا', 'الأصمعي', 'المشراق', 'الجمعيات',
+        'القبلة', 'حي الحسين', 'خمسة ميل', 'الفاو', 'المدينة', 'الحيانية'
+      ];
+      basraAreas.forEach((a) => {
+        const opt = document.createElement('option');
+        opt.value = a;
+        opt.textContent = a;
+        areaSelect.appendChild(opt);
+      });
+    }
+
+    // Fetch and render doctors list
+    async function fetchDoctors(append = false) {
+      if (!append) {
+        state.page = 1;
+        state.doctors = [];
+      }
+
+      const params = new URLSearchParams({
+        page: state.page,
+        limit: state.limit
+      });
+
+      if (state.searchQuery.trim()) {
+        params.append('q', state.searchQuery.trim());
+      }
+      if (state.selectedSpecialty && state.selectedSpecialty !== 'الكل') {
+        params.append('specialty', state.selectedSpecialty);
+      }
+      if (state.selectedArea && state.selectedArea !== 'الكل') {
+        params.append('area', state.selectedArea);
+      }
+
+      try {
+        const res = await fetch(`/api/doctors?${params.toString()}`);
+        const data = await res.json();
+
+        if (append) {
+          state.doctors = [...state.doctors, ...(data.doctors || [])];
+        } else {
+          state.doctors = data.doctors || [];
+        }
+
+        state.totalCount = data.totalCount || 0;
+        renderDoctorsList();
+      } catch (err) {
+        console.error('Error fetching doctors:', err);
+        renderErrorState('فشل في جلب البيانات من الخادم. يرجى التأكد من اتصال الإنترنت.');
+      }
+    }
+
+    // Render doctor cards
+    function renderDoctorsList() {
+      const container = document.getElementById('doctors-container');
+      const emptyState = document.getElementById('empty-state');
+      const emptyTitle = document.getElementById('empty-state-title');
+      const emptyDesc = document.getElementById('empty-state-desc');
+      const loadMoreContainer = document.getElementById('load-more-container');
+      const countBadge = document.getElementById('results-count-badge');
+
+      countBadge.textContent = `تم العثور على ${state.totalCount} طبيب`;
+
+      if (state.doctors.length === 0) {
+        container.innerHTML = '';
+        emptyState.classList.remove('hidden');
+        loadMoreContainer.classList.add('hidden');
+
+        if (state.searchQuery || state.selectedSpecialty !== 'الكل' || state.selectedArea !== 'الكل') {
+          emptyTitle.textContent = 'لا توجد نتائج مطابقة لبحثك';
+          emptyDesc.textContent = 'لم نتمكن من إيجاد أطباء يطابقون خيارات البحث الحالية. جرب تغيير كلمة البحث أو إعادة ضبط الفلاتر.';
+          document.getElementById('empty-state-actions').innerHTML = `
+            <button onclick="resetAllFilters()" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-md transition">
+              إعادة ضبط البحث والفلاتر
+            </button>
+          `;
+        } else {
+          emptyTitle.textContent = 'لا توجد بيانات حالياً';
+          emptyDesc.textContent = 'لم يتم رفع بيانات الأطباء في الدليل حتى الآن. يمكنك رفع ملف Excel من لوحة الإدارة لإظهار البيانات فوراً.';
+          document.getElementById('empty-state-actions').innerHTML = `
+            <a href="/admin" class="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-md transition">
+              الانتقال إلى لوحة الإدارة لرفع الملف
+            </a>
+          `;
+        }
+        return;
+      }
+
+      emptyState.classList.add('hidden');
+      container.innerHTML = '';
+
+      state.doctors.forEach((doc) => {
+        const card = createDoctorCardElement(doc);
+        container.appendChild(card);
+      });
+
+      // Show/hide load more
+      if (state.doctors.length < state.totalCount) {
+        loadMoreContainer.classList.remove('hidden');
+      } else {
+        loadMoreContainer.classList.add('hidden');
+      }
+    }
+
+    // Create single doctor card element
+    function createDoctorCardElement(doc) {
+      const card = document.createElement('div');
+      card.className = 'group bg-white dark:bg-slate-800 rounded-3xl p-6 border border-slate-200/80 dark:border-slate-700/80 shadow-sm hover:shadow-xl hover:border-primary-400 dark:hover:border-primary-500 transition-all duration-300 flex flex-col justify-between';
+
+      const icon = getSpecialtyIcon(doc.specialty);
+      const cleanPhone = doc.phonePrimary || '';
+      const whatsappNumber = doc.whatsappPhone || (cleanPhone.startsWith('0') ? '964' + cleanPhone.slice(1) : '964' + cleanPhone);
+      const bookingMessage = encodeURIComponent(`السلام عليكم دكتور ${doc.fullName}، أرغب بحجز موعد، وجدت رقمكم في دليل أطباء البصرة.`);
+      const whatsappQuickUrl = `https://wa.me/${whatsappNumber}`;
+      const whatsappBookingUrl = `https://wa.me/${whatsappNumber}?text=${bookingMessage}`;
+
+      card.innerHTML = `
+        <div>
+          <!-- Header: Specialty badge & Verified icon -->
+          <div class="flex items-start justify-between gap-3 mb-3">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-primary-50 text-primary-700 dark:bg-primary-950/80 dark:text-primary-300 border border-primary-200 dark:border-primary-800">
+              <span>${icon}</span>
+              <span>${doc.specialty || 'طب عام'}</span>
+            </span>
+            <span class="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full">
+              <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+              <span>موثّق</span>
+            </span>
+          </div>
+
+          <!-- Doctor Full Name -->
+          <h4 class="text-xl font-black text-slate-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors mb-2">
+            ${doc.fullName}
+          </h4>
+
+          <!-- Address / Area -->
+          <div class="flex items-start gap-2 text-xs sm:text-sm text-slate-600 dark:text-slate-300 mb-2">
+            <svg class="w-4 h-4 text-rose-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+            </svg>
+            <span class="leading-relaxed font-medium">${doc.address || 'البصرة'}</span>
+          </div>
+
+          <!-- Notes / Clinic Hours (If present) -->
+          ${doc.notes ? `
+            <div class="flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-2xl mb-4 border border-slate-100 dark:border-slate-700">
+              <svg class="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+              </svg>
+              <span class="leading-relaxed font-medium">${doc.notes}</span>
+            </div>
+          ` : '<div class="mb-4"></div>'}
+        </div>
+
+        <!-- Action Buttons (Large, Accessible, Touch-Friendly on Mobile) -->
+        <div class="pt-4 border-t border-slate-100 dark:border-slate-700/70 space-y-2">
+          <!-- Primary Actions Row (Call & WhatsApp) -->
+          <div class="grid grid-cols-2 gap-2">
+            <!-- 1. زر اتصال -->
+            <a
+              href="${cleanPhone ? 'tel:' + cleanPhone : '#'}"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-700 dark:hover:bg-slate-600 font-bold text-xs sm:text-sm shadow-sm transition active:scale-95 ${!cleanPhone ? 'opacity-50 pointer-events-none' : ''}"
+              title="اتصال هاتفي مباشر"
+            >
+              <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+              </svg>
+              <span>اتصال</span>
+            </a>
+
+            <!-- 2. زر واتساب -->
+            <a
+              href="${whatsappQuickUrl}"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm shadow-sm transition active:scale-95 ${!cleanPhone ? 'opacity-50 pointer-events-none' : ''}"
+              title="فتح محادثة واتساب"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.711 2.598 2.669-.699c.969.531 1.815.82 2.79.82h.005c3.18 0 5.767-2.586 5.768-5.766 0-3.18-2.587-5.806-5.772-5.806zm3.376 8.21c-.14.39-.714.731-1.019.78-.305.048-.69.073-2.146-.532-1.859-.773-3.04-2.67-3.133-2.793-.093-.122-.751-.998-.751-1.905 0-.906.475-1.353.644-1.54.17-.188.373-.235.498-.235.125 0 .25.002.359.007.116.006.27-.044.423.323.16.38.547 1.334.595 1.432.048.098.081.213.016.34-.065.127-.098.207-.195.32-.097.114-.206.255-.294.342-.1.1-.205.209-.089.408.117.199.519.855 1.113 1.384.767.682 1.413.894 1.614.994.2.1.319.088.437-.048.118-.137.508-.59.643-.793.136-.204.271-.17.458-.102.187.068 1.182.557 1.385.658.204.102.34.153.39.237.05.085.05.49-.09.88z"/>
+              </svg>
+              <span>واتساب</span>
+            </a>
+          </div>
+
+          <!-- 3. زر حجز موعد عبر واتساب برسالة جاهزة -->
+          <a
+            href="${whatsappBookingUrl}"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-primary-50 dark:bg-slate-700/80 hover:bg-primary-100 dark:hover:bg-slate-700 text-primary-700 dark:text-primary-300 font-bold text-xs border border-primary-200/80 dark:border-primary-800 transition active:scale-95 ${!cleanPhone ? 'opacity-50 pointer-events-none' : ''}"
+            title="إرسال رسالة حجز مسبقة الصياغة للطبيب"
+          >
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+            <span>رسالة واتساب (طلب حجز موعد)</span>
+          </a>
+
+          <!-- Secondary Actions Row (Map & Share) -->
+          <div class="grid grid-cols-2 gap-2 pt-1">
+            <!-- 4. زر الخريطة -->
+            <button
+              type="button"
+              onclick="openClinicMapModal('${doc.id}')"
+              class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold transition active:scale-95"
+              title="عرض موقع العيادة على الخريطة"
+            >
+              <svg class="w-3.5 h-3.5 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/>
+              </svg>
+              <span>الخريطة</span>
+            </button>
+
+            <!-- 5. زر مشاركة -->
+            <button
+              type="button"
+              onclick="shareDoctorCard('${doc.fullName}', '${doc.specialty}', '${cleanPhone}', '${doc.address || 'البصرة'}')"
+              class="flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold transition active:scale-95"
+              title="نسخ ومشاركة بطاقة الطبيب"
+            >
+              <svg class="w-3.5 h-3.5 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
+              </svg>
+              <span>مشاركة</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      return card;
+    }
+
+    // Share doctor details via Web Share API or Clipboard copy
+    async function shareDoctorCard(name, specialty, phone, address) {
+      const shareText = `دليل أطباء البصرة:\n🩺 الطبيب: ${name}\nالاختصاص: ${specialty}\n📍 العنوان: ${address}\n📞 الهاتف: ${phone}\nرابط الدليل: ${window.location.origin}`;
+
+      if (navigator.share) {
+        try {
+          await navigator.share({
+            title: `دكتور ${name} — دليل أطباء البصرة`,
+            text: shareText,
+            url: window.location.href
+          });
+          return;
+        } catch (_) {}
+      }
+
+      // Fallback copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareText);
+        showToast('تم نسخ تفاصيل الطبيب إلى الحافظة!');
+      } catch (err) {
+        showToast('تعذر نسخ الرابط تلقائياً', true);
+      }
+    }
+
+    // Open Interactive Leaflet Map Modal
+    async function openClinicMapModal(doctorId) {
+      const modal = document.getElementById('map-modal');
+      const docNameEl = document.getElementById('map-modal-doc-name');
+      const docAddrEl = document.getElementById('map-modal-address');
+      const loadingEl = document.getElementById('map-loading');
+      const gMapsBtn = document.getElementById('open-google-maps-btn');
+      const dirBtn = document.getElementById('get-directions-btn');
+
+      const doctor = state.doctors.find((d) => d.id === doctorId);
+      if (!doctor) return;
+
+      docNameEl.textContent = doctor.fullName + ' — ' + (doctor.specialty || 'عيادة طبية');
+      docAddrEl.textContent = doctor.address || 'محافظة البصرة، العراق';
+
+      modal.classList.remove('hidden');
+      loadingEl.classList.remove('hidden');
+
+      // Default Basra center
+      let lat = doctor.latitude || 30.5081;
+      let lon = doctor.longitude || 47.7835;
+
+      // If doctor does not have coordinates, geocode via cached backend endpoint
+      if (!doctor.latitude || !doctor.longitude) {
+        const queryAddress = (doctor.address || doctor.city || 'البصرة').trim();
+        try {
+          const res = await fetch(`/api/geocode?q=${encodeURIComponent(queryAddress)}`);
+          const geo = await res.json();
+          if (geo && geo.latitude && geo.longitude) {
+            lat = geo.latitude;
+            lon = geo.longitude;
+          }
+        } catch (e) {
+          console.warn('Geocoding fallback failed:', e);
+        }
+      }
+
+      loadingEl.classList.add('hidden');
+
+      // Setup external Google Maps URLs
+      gMapsBtn.href = `https://www.google.com/maps/search/?api=1&query=${lat},${lon}`;
+      dirBtn.href = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lon}`;
+
+      // Initialize or update Leaflet map
+      setTimeout(() => {
+        if (!state.leafletMap) {
+          state.leafletMap = L.map('clinic-map', {
+            center: [lat, lon],
+            zoom: 14,
+            zoomControl: true
+          });
+
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+          }).addTo(state.leafletMap);
+        } else {
+          state.leafletMap.setView([lat, lon], 14);
+          state.leafletMap.invalidateSize();
+        }
+
+        // Add medical pin marker
+        if (state.activeMarker) {
+          state.leafletMap.removeLayer(state.activeMarker);
+        }
+
+        state.activeMarker = L.marker([lat, lon]).addTo(state.leafletMap)
+          .bindPopup(`
+            <div style="font-family: Cairo, sans-serif; text-align: right;">
+              <b style="font-size: 14px; color: #0f172a;">${doctor.fullName}</b><br/>
+              <span style="color: #0d9488; font-weight: 600;">${doctor.specialty || ''}</span><br/>
+              <span style="font-size: 12px; color: #64748b;">${doctor.address || 'البصرة'}</span>
+            </div>
+          `)
+          .openPopup();
+      }, 150);
+    }
+
+    function closeClinicMapModal() {
+      const modal = document.getElementById('map-modal');
+      modal.classList.add('hidden');
+    }
+
+    // Reset all search and filters
+    function resetAllFilters() {
+      state.searchQuery = '';
+      state.selectedSpecialty = 'الكل';
+      state.selectedArea = 'الكل';
+      state.page = 1;
+
+      document.getElementById('search-input').value = '';
+      document.getElementById('clear-search-btn').classList.add('hidden');
+      document.getElementById('filter-specialty').value = 'الكل';
+      document.getElementById('filter-area').value = 'الكل';
+
+      populateSpecialtiesUI();
+      fetchDoctors();
+    }
+
+    // Event Listeners setup
+    function initEventListeners() {
+      const searchInput = document.getElementById('search-input');
+      const clearBtn = document.getElementById('clear-search-btn');
+      const searchBtn = document.getElementById('search-trigger-btn');
+      const specSelect = document.getElementById('filter-specialty');
+      const areaSelect = document.getElementById('filter-area');
+      const resetAllBtn = document.getElementById('reset-all-filters-btn');
+      const resetSpecBtn = document.getElementById('reset-specialty-btn');
+      const loadMoreBtn = document.getElementById('load-more-btn');
+      const closeMapBtn = document.getElementById('close-map-btn');
+      const mapModal = document.getElementById('map-modal');
+
+      // Debounced live search
+      let debounceTimeout = null;
+      searchInput.addEventListener('input', (e) => {
+        const val = e.target.value;
+        state.searchQuery = val;
+
+        if (val.trim()) {
+          clearBtn.classList.remove('hidden');
+        } else {
+          clearBtn.classList.add('hidden');
+        }
+
+        clearTimeout(debounceTimeout);
+        debounceTimeout = setTimeout(() => {
+          fetchDoctors();
+        }, 300);
+      });
+
+      // Clear search button
+      clearBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        state.searchQuery = '';
+        clearBtn.classList.add('hidden');
+        fetchDoctors();
+      });
+
+      searchBtn.addEventListener('click', () => {
+        fetchDoctors();
+      });
+
+      // Filter changes
+      specSelect.addEventListener('change', (e) => {
+        state.selectedSpecialty = e.target.value;
+        populateSpecialtiesUI();
+        fetchDoctors();
+      });
+
+      areaSelect.addEventListener('change', (e) => {
+        state.selectedArea = e.target.value;
+        fetchDoctors();
+      });
+
+      resetAllBtn.addEventListener('click', resetAllFilters);
+
+      resetSpecBtn.addEventListener('click', () => {
+        state.selectedSpecialty = 'الكل';
+        specSelect.value = 'الكل';
+        populateSpecialtiesUI();
+        fetchDoctors();
+      });
+
+      // Load more button
+      loadMoreBtn.addEventListener('click', () => {
+        state.page += 1;
+        fetchDoctors(true);
+      });
+
+      // Close map modal
+      closeMapBtn.addEventListener('click', closeClinicMapModal);
+      mapModal.addEventListener('click', (e) => {
+        if (e.target === mapModal) closeClinicMapModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') closeClinicMapModal();
+      });
+    }
+
+    // App Initialization
+    document.addEventListener('DOMContentLoaded', async () => {
+      initTheme();
+      initEventListeners();
+      await fetchMetadata();
+      await fetchDoctors();
+    });
+  </script>
+</body>
+</html>

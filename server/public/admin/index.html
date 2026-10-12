@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة إدارة دليل أطباء البصرة | Admin Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Google Fonts: Cairo -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Cairo', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#f0fdfa',
+              100: '#ccfbf1',
+              500: '#14b8a6',
+              600: '#0d9488',
+              700: '#0f766e',
+              800: '#115e59',
+              900: '#134e4a',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- SheetJS (xlsx) for client-side Excel parsing & preview -->
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+  <style>
+    body {
+      font-family: 'Cairo', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(13, 148, 136, 0.4);
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+
+<body class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-100 min-h-screen">
+
+  <!-- ==================== 1. LOGIN SCREEN (Visible if not authenticated) ==================== -->
+  <div id="login-container" class="min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-md w-full bg-white dark:bg-slate-800 rounded-3xl p-8 shadow-2xl border border-slate-200 dark:border-slate-700">
+      <div class="text-center mb-8">
+        <div class="w-16 h-16 rounded-3xl bg-primary-600 text-white flex items-center justify-center mx-auto mb-4 shadow-lg shadow-primary-500/30">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white">لوحة الإدارة المعتمدة</h2>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">دليل أطباء البصرة — تسجيل دخول المسؤولين فقط</p>
+      </div>
+
+      <!-- Rate Limit Alert or Error Notice -->
+      <div id="login-error-alert" class="hidden mb-6 p-4 rounded-2xl bg-rose-50 dark:bg-rose-950/50 border border-rose-200 dark:border-rose-900 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed">
+        <span id="login-error-text">اسم المستخدم أو كلمة المرور غير صحيحة</span>
+      </div>
+
+      <form id="login-form" class="space-y-4">
+        <div>
+          <label for="username" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم المستخدم</label>
+          <input
+            id="username"
+            type="text"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            placeholder="admin"
+          />
+        </div>
+
+        <div>
+          <label for="password" class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور</label>
+          <input
+            id="password"
+            type="password"
+            required
+            class="w-full px-4 py-3 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            placeholder="••••••••••••"
+          />
+        </div>
+
+        <button
+          type="submit"
+          id="login-submit-btn"
+          class="w-full py-3.5 px-4 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-bold text-sm shadow-md shadow-primary-600/30 transition flex items-center justify-center gap-2"
+        >
+          <span>تسجيل الدخول</span>
+        </button>
+      </form>
+
+      <div class="mt-6 pt-6 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between text-xs text-slate-500">
+        <a href="/" class="hover:text-primary-600 transition flex items-center gap-1">
+          <span>← العودة للموقع الرئيسي</span>
+        </a>
+        <span>جلسات مشفرة JWT</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== 2. ADMIN DASHBOARD (Visible when logged in) ==================== -->
+  <div id="dashboard-container" class="hidden min-h-screen flex flex-col">
+    <!-- Top Nav -->
+    <header class="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-0 z-30 shadow-xs">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between h-16">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-primary-600 text-white flex items-center justify-center font-bold">
+              🩺
+            </div>
+            <div>
+              <h1 class="text-base font-black text-slate-900 dark:text-white">إدارة دليل أطباء البصرة</h1>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">لوحة التحكم والتحديثات الفورية</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-3">
+            <a href="/" target="_blank" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition flex items-center gap-1">
+              <span>عرض الموقع</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+            </a>
+
+            <button id="open-change-pw-btn" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 transition">
+              تغيير كلمة المرور
+            </button>
+
+            <button id="logout-btn" class="px-3.5 py-1.5 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-700 text-white transition flex items-center gap-1">
+              <span>خروج</span>
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+      <!-- 1. Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-primary-100 text-primary-700 dark:bg-primary-950 dark:text-primary-300 flex items-center justify-center text-xl">
+            👨‍⚕️
+          </div>
+          <div>
+            <div id="stat-doctor-count" class="text-2xl font-black text-slate-900 dark:text-white">0</div>
+            <div class="text-xs text-slate-500 font-semibold">إجمالي الأطباء في الدليل</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-sky-100 text-sky-700 dark:bg-sky-950 dark:text-sky-300 flex items-center justify-center text-xl">
+            🩺
+          </div>
+          <div>
+            <div id="stat-specialty-count" class="text-2xl font-black text-slate-900 dark:text-white">0</div>
+            <div class="text-xs text-slate-500 font-semibold">عدد الاختصاصات المتوفرة</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 flex items-center justify-center text-xl">
+            📅
+          </div>
+          <div>
+            <div id="stat-last-import" class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate">لا يوجد استيراد بعد</div>
+            <div class="text-xs text-slate-500 font-semibold">تاريخ آخر تحديث للملف</div>
+          </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm flex items-center gap-4">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 flex items-center justify-center text-xl">
+            ⚡
+          </div>
+          <div>
+            <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1">
+              <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              قاعدة البيانات متصلة
+            </div>
+            <div class="text-xs text-slate-500 font-semibold">SQLite Central Database</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Excel Upload & Tools Section -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+          <div>
+            <h2 class="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+              <span>📊 رفع وتحديث ملف Excel لأطباء البصرة</span>
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">
+              يجب أن يحتوي ملف Excel على ٥ أعمدة بهذا الترتيب: (اسم الطبيب، الاختصاص، رقم الهاتف، العنوان، الملاحظات).
+            </p>
+          </div>
+
+          <!-- Quick Buttons: Download Template & Export Current -->
+          <div class="flex flex-wrap items-center gap-3">
+            <a
+              href="/api/admin/template"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold transition"
+            >
+              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+              <span>تحميل نموذج Excel فارغ</span>
+            </a>
+
+            <a
+              id="export-excel-btn"
+              href="/api/admin/export-excel"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-800 dark:text-slate-200 text-xs font-bold transition"
+            >
+              <svg class="w-4 h-4 text-sky-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+              <span>تصدير الأطباء الحاليين إلى Excel</span>
+            </a>
+
+            <button
+              id="open-add-doctor-btn"
+              class="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-sm transition"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+              <span>إضافة طبيب يدوياً</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Drag & Drop Zone -->
+        <div
+          id="drop-zone"
+          class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-3xl p-8 text-center hover:border-primary-500 dark:hover:border-primary-400 bg-slate-50 dark:bg-slate-750 transition-colors cursor-pointer"
+        >
+          <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-primary-50 dark:bg-slate-700 text-primary-600 dark:text-primary-400 flex items-center justify-center mb-3">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+          </div>
+          <h3 class="text-base font-bold text-slate-800 dark:text-slate-200">اسحب وأفلت ملف Excel هنا، أو اضغط للاختيار من جهازك</h3>
+          <p class="text-xs text-slate-500 mt-1">يدعم ملفات .xlsx و .xls و .csv (حتى 25 ميجابايت)</p>
+          <p id="selected-file-name" class="mt-3 text-xs font-bold text-primary-600 dark:text-primary-400 hidden"></p>
+        </div>
+
+        <!-- Import Mode Selection -->
+        <div class="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-slate-50 dark:bg-slate-700/50 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <div class="text-xs font-bold text-slate-700 dark:text-slate-300">طريقة الاستيراد:</div>
+          <div class="flex flex-wrap items-center gap-4 text-xs font-medium">
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="import-mode" value="MERGE" checked class="text-primary-600 focus:ring-primary-500">
+              <span>إضافة مع منع التكرار (تحديث الموجودين بالاسم أو رقم الهاتف)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer">
+              <input type="radio" name="import-mode" value="REPLACE_ALL" class="text-rose-600 focus:ring-rose-500">
+              <span class="text-rose-600 dark:text-rose-400 font-bold">استبدال كل البيانات الحالية (مسح وإعادة إدخال)</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Preview Modal / Area (Visible after selecting file) -->
+        <div id="excel-preview-box" class="mt-6 hidden bg-slate-50 dark:bg-slate-700/40 rounded-2xl p-5 border border-slate-200 dark:border-slate-600">
+          <div class="flex items-center justify-between mb-3">
+            <h4 class="text-sm font-bold text-slate-900 dark:text-white flex items-center gap-2">
+              <span>🔍 معاينة محتوى الملف قبل التأكيد</span>
+              <span id="preview-row-count" class="text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-800 dark:bg-primary-900 dark:text-primary-200">0 صف</span>
+            </h4>
+            <div id="preview-errors-badge" class="text-xs text-rose-600 font-bold hidden"></div>
+          </div>
+
+          <!-- First 10 rows preview table -->
+          <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800">
+            <table class="w-full text-right text-xs">
+              <thead class="bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold">
+                <tr>
+                  <th class="p-2.5">#</th>
+                  <th class="p-2.5">اسم الطبيب</th>
+                  <th class="p-2.5">الاختصاص</th>
+                  <th class="p-2.5">رقم الهاتف</th>
+                  <th class="p-2.5">العنوان</th>
+                  <th class="p-2.5">الملاحظات</th>
+                </tr>
+              </thead>
+              <tbody id="preview-table-body" class="divide-y divide-slate-100 dark:divide-slate-700">
+                <!-- Injected via JS -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Confirm Import Action -->
+          <div class="mt-4 flex items-center justify-end gap-3">
+            <button id="cancel-upload-btn" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-200 dark:text-slate-300 transition">
+              إلغاء
+            </button>
+            <button id="confirm-upload-btn" class="px-6 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-md transition flex items-center gap-2">
+              <span id="confirm-upload-text">تأكيد رفع وحفظ البيانات في الدليل</span>
+              <svg id="upload-spinner" class="w-4 h-4 animate-spin hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25"></circle><path fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" class="opacity-75"></path></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Doctors Table Management -->
+      <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+          <h2 class="text-xl font-black text-slate-900 dark:text-white">
+            قائمة الأطباء في الدليل
+          </h2>
+          <!-- Table Search Input -->
+          <div class="relative min-w-[280px]">
+            <input
+              id="admin-search-input"
+              type="text"
+              placeholder="بحث في جدول الأطباء..."
+              class="w-full pl-3 pr-9 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+            />
+            <div class="absolute right-3 top-2.5 text-slate-400 pointer-events-none">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-700">
+          <table class="w-full text-right text-xs">
+            <thead class="bg-slate-50 dark:bg-slate-700/60 text-slate-700 dark:text-slate-300 font-bold border-b border-slate-200 dark:border-slate-700">
+              <tr>
+                <th class="p-3">اسم الطبيب</th>
+                <th class="p-3">الاختصاص</th>
+                <th class="p-3">الهاتف</th>
+                <th class="p-3">العنوان</th>
+                <th class="p-3">الملاحظات</th>
+                <th class="p-3 text-center">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="doctors-table-body" class="divide-y divide-slate-100 dark:divide-slate-700 text-slate-800 dark:text-slate-200">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== MODALS ==================== -->
+
+  <!-- Add / Edit Doctor Modal -->
+  <div id="doctor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-slate-200 dark:border-slate-700 shadow-2xl animate-in fade-in">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-700 mb-4">
+        <h3 id="doctor-modal-title" class="text-lg font-black text-slate-900 dark:text-white">إضافة طبيب جديد</h3>
+        <button id="close-doctor-modal-btn" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <form id="doctor-form" class="space-y-3">
+        <input type="hidden" id="doc-id">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">اسم الطبيب *</label>
+          <input type="text" id="doc-name" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs focus:ring-2 focus:ring-primary-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الاختصاص *</label>
+          <input type="text" id="doc-specialty" required placeholder="مثال: جراحة العظام والكسور" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs focus:ring-2 focus:ring-primary-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">رقم الهاتف *</label>
+          <input type="text" id="doc-phone" required placeholder="07801234567" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs focus:ring-2 focus:ring-primary-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">العنوان *</label>
+          <input type="text" id="doc-address" required placeholder="البصرة - الجبيلة - مقابل المستشفى" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs focus:ring-2 focus:ring-primary-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">الملاحظات وأوقات الدوام</label>
+          <input type="text" id="doc-notes" placeholder="عيادة مسائية من ٤ حتى ٨ مساءً" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs focus:ring-2 focus:ring-primary-500">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 pt-1">
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">خط العرض (Latitude) - اختياري</label>
+            <input type="number" step="any" id="doc-lat" placeholder="30.5081" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-semibold text-slate-500 mb-1">خط الطول (Longitude) - اختياري</label>
+            <input type="number" step="any" id="doc-lon" placeholder="47.7835" class="w-full px-3 py-1.5 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs">
+          </div>
+        </div>
+
+        <div class="pt-4 flex items-center justify-end gap-2">
+          <button type="button" id="cancel-doctor-modal-btn" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold shadow-sm">حفظ الطبيب</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Change Password Modal -->
+  <div id="change-pw-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs hidden">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl p-6 sm:p-8 max-w-sm w-full border border-slate-200 dark:border-slate-700 shadow-2xl">
+      <h3 class="text-base font-black text-slate-900 dark:text-white mb-4">تغيير كلمة مرور المدير</h3>
+      <form id="change-pw-form" class="space-y-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور الحالية</label>
+          <input type="password" id="cur-pw" required class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">كلمة المرور الجديدة</label>
+          <input type="password" id="new-pw" required minlength="6" class="w-full px-3 py-2 rounded-xl bg-slate-50 dark:bg-slate-700 border border-slate-300 dark:border-slate-600 text-xs">
+        </div>
+        <div class="pt-3 flex items-center justify-end gap-2">
+          <button type="button" id="close-pw-modal-btn" class="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 dark:text-slate-300">إلغاء</button>
+          <button type="submit" class="px-5 py-2 rounded-xl bg-primary-600 hover:bg-primary-700 text-white text-xs font-bold">تحديث</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Toast Message -->
+  <div id="admin-toast" class="fixed bottom-6 left-6 z-50 max-w-sm bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl transform -translate-y-20 opacity-0 transition-all duration-300 text-xs font-bold pointer-events-none">
+    تم بنجاح!
+  </div>
+
+  <!-- ==================== JAVASCRIPT ==================== -->
+  <script>
+    const adminState = {
+      token: localStorage.getItem('admin_token') || '',
+      doctors: [],
+      pendingRows: []
+    };
+
+    function showAdminToast(msg) {
+      const toast = document.getElementById('admin-toast');
+      toast.textContent = msg;
+      toast.classList.remove('-translate-y-20', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      setTimeout(() => {
+        toast.classList.add('-translate-y-20', 'opacity-0');
+        toast.classList.remove('translate-y-0', 'opacity-100');
+      }, 3500);
+    }
+
+    // Auto logout timer (30 minutes of inactivity)
+    let inactivityTimer;
+    function resetInactivityTimer() {
+      clearTimeout(inactivityTimer);
+      inactivityTimer = setTimeout(() => {
+        if (adminState.token) {
+          logout();
+          alert('انتهت مدة الجلسة بسبب الخمول. يرجى تسجيل الدخول مجدداً.');
+        }
+      }, 30 * 60 * 1000);
+    }
+    window.addEventListener('mousemove', resetInactivityTimer);
+    window.addEventListener('keypress', resetInactivityTimer);
+
+    // Check existing session
+    async function checkAuthSession() {
+      if (!adminState.token) {
+        showLoginView();
+        return;
+      }
+      try {
+        const res = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${adminState.token}` }
+        });
+        if (res.ok) {
+          showDashboardView();
+        } else {
+          logout();
+        }
+      } catch (_) {
+        showLoginView();
+      }
+    }
+
+    function showLoginView() {
+      document.getElementById('login-container').classList.remove('hidden');
+      document.getElementById('dashboard-container').classList.add('hidden');
+    }
+
+    function showDashboardView() {
+      document.getElementById('login-container').classList.add('hidden');
+      document.getElementById('dashboard-container').classList.remove('hidden');
+      loadStats();
+      loadDoctorsTable();
+    }
+
+    function logout() {
+      localStorage.removeItem('admin_token');
+      adminState.token = '';
+      showLoginView();
+    }
+
+    // Login Form Handler
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const u = document.getElementById('username').value.trim();
+      const p = document.getElementById('password').value;
+      const errorAlert = document.getElementById('login-error-alert');
+      const errorText = document.getElementById('login-error-text');
+
+      errorAlert.classList.add('hidden');
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: u, password: p })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+          adminState.token = data.token;
+          localStorage.setItem('admin_token', data.token);
+          showDashboardView();
+          showAdminToast('مرحباً بك! تم تسجيل الدخول بنجاح.');
+        } else {
+          errorText.textContent = data.message || 'بيانات الدخول غير صحيحة';
+          errorAlert.classList.remove('hidden');
+        }
+      } catch (err) {
+        errorText.textContent = 'تعذر الاتصال بالخادم. يرجى التحقق من الشبكة.';
+        errorAlert.classList.remove('hidden');
+      }
+    });
+
+    document.getElementById('logout-btn').addEventListener('click', logout);
+
+    // Load Dashboard Stats
+    async function loadStats() {
+      try {
+        const res = await fetch('/api/doctors/meta/summary');
+        const data = await res.json();
+
+        document.getElementById('stat-doctor-count').textContent = data.doctorCount || 0;
+        document.getElementById('stat-specialty-count').textContent = data.specialtiesCount || 0;
+
+        if (data.lastImportDate) {
+          const date = new Date(data.lastImportDate);
+          document.getElementById('stat-last-import').textContent = date.toLocaleDateString('ar-IQ') + ' ' + date.toLocaleTimeString('ar-IQ');
+        } else {
+          document.getElementById('stat-last-import').textContent = 'لا يوجد استيراد مسجل';
+        }
+      } catch (err) {
+        console.warn('Could not load stats:', err);
+      }
+    }
+
+    // Load Doctors Table
+    async function loadDoctorsTable(query = '') {
+      try {
+        const res = await fetch(`/api/doctors?limit=500${query ? '&q=' + encodeURIComponent(query) : ''}`);
+        const data = await res.json();
+        adminState.doctors = data.doctors || [];
+
+        const tbody = document.getElementById('doctors-table-body');
+        tbody.innerHTML = '';
+
+        if (adminState.doctors.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-400">لا يوجد أطباء مسجلون في الدليل حالياً.</td></tr>`;
+          return;
+        }
+
+        adminState.doctors.forEach((doc) => {
+          const tr = document.createElement('tr');
+          tr.className = 'hover:bg-slate-50 dark:hover:bg-slate-750 transition';
+          tr.innerHTML = `
+            <td class="p-3 font-bold text-slate-900 dark:text-white">${doc.fullName}</td>
+            <td class="p-3"><span class="px-2 py-0.5 rounded-md bg-primary-50 dark:bg-primary-950 text-primary-700 dark:text-primary-300 font-semibold text-[11px]">${doc.specialty}</span></td>
+            <td class="p-3 text-slate-600 dark:text-slate-300 dir-ltr text-right">${doc.phonePrimary}</td>
+            <td class="p-3 text-slate-500 max-w-xs truncate">${doc.address || '-'}</td>
+            <td class="p-3 text-slate-500 max-w-xs truncate">${doc.notes || '-'}</td>
+            <td class="p-3 text-center">
+              <div class="flex items-center justify-center gap-2">
+                <button onclick="editDoctor('${doc.id}')" class="p-1 rounded-lg text-primary-600 hover:bg-primary-50 dark:hover:bg-slate-700" title="تعديل">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                </button>
+                <button onclick="deleteDoctor('${doc.id}', '${doc.fullName}')" class="p-1 rounded-lg text-rose-600 hover:bg-rose-50 dark:hover:bg-slate-700" title="حذف">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                </button>
+              </div>
+            </td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error('Failed to load doctors table:', err);
+      }
+    }
+
+    // Search input inside table
+    document.getElementById('admin-search-input').addEventListener('input', (e) => {
+      loadDoctorsTable(e.target.value.trim());
+    });
+
+    // Excel Drag & Drop & Upload logic
+    const dropZone = document.getElementById('drop-zone');
+    const fileInput = document.getElementById('excel-file-input');
+    const selectedNameEl = document.getElementById('selected-file-name');
+    const previewBox = document.getElementById('excel-preview-box');
+
+    dropZone.addEventListener('click', () => fileInput.click());
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('border-primary-500', 'bg-primary-50/20');
+    });
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('border-primary-500', 'bg-primary-50/20');
+    });
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('border-primary-500', 'bg-primary-50/20');
+      if (e.dataTransfer.files.length) {
+        handleFileSelection(e.dataTransfer.files[0]);
+      }
+    });
+    fileInput.addEventListener('change', (e) => {
+      if (e.target.files.length) {
+        handleFileSelection(e.target.files[0]);
+      }
+    });
+
+    // Parse Excel via SheetJS in Browser
+    function handleFileSelection(file) {
+      selectedNameEl.textContent = `الملف المختار: ${file.name} (${(file.size / 1024).toFixed(1)} KB)`;
+      selectedNameEl.classList.remove('hidden');
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = new Uint8Array(e.target.result);
+          const workbook = XLSX.read(data, { type: 'array' });
+          const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+          const rawRows = XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+
+          if (!rawRows || rawRows.length < 2) {
+            alert('الملف فارغ أو لا يحتوي على صفوف بيانات.');
+            return;
+          }
+
+          // Expected columns: [اسم الطبيب, الاختصاص, رقم الهاتف, العنوان, الملاحظات]
+          const validList = [];
+          const errors = [];
+
+          for (let i = 1; i < rawRows.length; i++) {
+            const row = rawRows[i];
+            if (!row || row.length === 0) continue;
+            const isRowEmpty = row.every((c) => c === undefined || c === null || String(c).trim() === '');
+            if (isRowEmpty) continue;
+
+            const name = row[0] ? String(row[0]).trim() : '';
+            const spec = row[1] ? String(row[1]).trim() : '';
+            const phone = row[2] ? String(row[2]).trim() : '';
+            const addr = row[3] ? String(row[3]).trim() : '';
+            const notes = row[4] ? String(row[4]).trim() : '';
+
+            if (!name) {
+              errors.push(`صف ${i + 1}: اسم الطبيب فارغ`);
+              continue;
+            }
+
+            validList.push({
+              fullName: name,
+              specialty: spec || 'طب عام',
+              phonePrimary: phone,
+              address: addr,
+              notes: notes
+            });
+          }
+
+          adminState.pendingRows = validList;
+
+          // Render Preview
+          document.getElementById('preview-row-count').textContent = `${validList.length} صف صالح للاستيراد`;
+          const tbody = document.getElementById('preview-table-body');
+          tbody.innerHTML = '';
+
+          validList.slice(0, 10).forEach((item, idx) => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td class="p-2 font-bold text-slate-400">${idx + 1}</td>
+              <td class="p-2 font-bold text-slate-800 dark:text-slate-100">${item.fullName}</td>
+              <td class="p-2 text-primary-600">${item.specialty}</td>
+              <td class="p-2">${item.phonePrimary}</td>
+              <td class="p-2 text-slate-500 max-w-xs truncate">${item.address}</td>
+              <td class="p-2 text-slate-500 max-w-xs truncate">${item.notes}</td>
+            `;
+            tbody.appendChild(tr);
+          });
+
+          previewBox.classList.remove('hidden');
+        } catch (err) {
+          alert('تعذر فتح ملف Excel: ' + err.message);
+        }
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    // Cancel Upload
+    document.getElementById('cancel-upload-btn').addEventListener('click', () => {
+      previewBox.classList.add('hidden');
+      selectedNameEl.classList.add('hidden');
+      fileInput.value = '';
+      adminState.pendingRows = [];
+    });
+
+    // Confirm Upload & Save
+    document.getElementById('confirm-upload-btn').addEventListener('click', async () => {
+      if (!adminState.pendingRows.length) return;
+
+      const importMode = document.querySelector('input[name="import-mode"]:checked').value;
+      const spinner = document.getElementById('upload-spinner');
+      const btnText = document.getElementById('confirm-upload-text');
+
+      spinner.classList.remove('hidden');
+      btnText.textContent = 'جاري الحفظ والمعالجة...';
+
+      try {
+        const res = await fetch('/api/admin/doctors/batch-import', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminState.token}`
+          },
+          body: JSON.stringify({
+            fileName: fileInput.files[0]?.name || 'uploaded_sheet.xlsx',
+            importMode: importMode,
+            doctors: adminState.pendingRows
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok && data.success) {
+          showAdminToast(data.message || 'تم تحديث الدليل بنجاح!');
+          previewBox.classList.add('hidden');
+          selectedNameEl.classList.add('hidden');
+          fileInput.value = '';
+          adminState.pendingRows = [];
+          loadStats();
+          loadDoctorsTable();
+        } else {
+          alert('حدث خطأ: ' + (data.message || 'فشل الاستيراد'));
+        }
+      } catch (err) {
+        alert('تعذر إكمال العملية: ' + err.message);
+      } finally {
+        spinner.classList.add('hidden');
+        btnText.textContent = 'تأكيد رفع وحفظ البيانات في الدليل';
+      }
+    });
+
+    // Add Doctor Manually
+    document.getElementById('open-add-doctor-btn').addEventListener('click', () => {
+      document.getElementById('doc-id').value = '';
+      document.getElementById('doc-name').value = '';
+      document.getElementById('doc-specialty').value = '';
+      document.getElementById('doc-phone').value = '';
+      document.getElementById('doc-address').value = '';
+      document.getElementById('doc-notes').value = '';
+      document.getElementById('doc-lat').value = '';
+      document.getElementById('doc-lon').value = '';
+      document.getElementById('doctor-modal-title').textContent = 'إضافة طبيب جديد';
+      document.getElementById('doctor-modal').classList.remove('hidden');
+    });
+
+    document.getElementById('close-doctor-modal-btn').addEventListener('click', () => {
+      document.getElementById('doctor-modal').classList.add('hidden');
+    });
+    document.getElementById('cancel-doctor-modal-btn').addEventListener('click', () => {
+      document.getElementById('doctor-modal').classList.add('hidden');
+    });
+
+    // Edit Doctor
+    window.editDoctor = (id) => {
+      const doc = adminState.doctors.find((d) => d.id === id);
+      if (!doc) return;
+
+      document.getElementById('doc-id').value = doc.id;
+      document.getElementById('doc-name').value = doc.fullName;
+      document.getElementById('doc-specialty').value = doc.specialty;
+      document.getElementById('doc-phone').value = doc.phonePrimary;
+      document.getElementById('doc-address').value = doc.address || '';
+      document.getElementById('doc-notes').value = doc.notes || '';
+      document.getElementById('doc-lat').value = doc.latitude || '';
+      document.getElementById('doc-lon').value = doc.longitude || '';
+      document.getElementById('doctor-modal-title').textContent = 'تعديل بيانات الطبيب';
+      document.getElementById('doctor-modal').classList.remove('hidden');
+    };
+
+    // Save Doctor (Create or Update)
+    document.getElementById('doctor-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const id = document.getElementById('doc-id').value;
+      const isEdit = !!id;
+
+      const payload = {
+        fullName: document.getElementById('doc-name').value.trim(),
+        specialty: document.getElementById('doc-specialty').value.trim(),
+        phonePrimary: document.getElementById('doc-phone').value.trim(),
+        address: document.getElementById('doc-address').value.trim(),
+        notes: document.getElementById('doc-notes').value.trim(),
+        latitude: document.getElementById('doc-lat').value || null,
+        longitude: document.getElementById('doc-lon').value || null
+      };
+
+      const url = isEdit ? `/api/admin/doctors/${id}` : '/api/admin/doctors';
+      const method = isEdit ? 'PUT' : 'POST';
+
+      try {
+        const res = await fetch(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminState.token}`
+          },
+          body: JSON.stringify(payload)
+        });
+
+        if (res.ok) {
+          document.getElementById('doctor-modal').classList.add('hidden');
+          showAdminToast(isEdit ? 'تم تحديث بيانات الطبيب بنجاح' : 'تمت إضافة الطبيب بنجاح');
+          loadStats();
+          loadDoctorsTable();
+        } else {
+          const errData = await res.json();
+          alert('خطأ: ' + (errData.message || 'فشلت العملية'));
+        }
+      } catch (err) {
+        alert('تعذر الحفظ: ' + err.message);
+      }
+    });
+
+    // Delete Doctor
+    window.deleteDoctor = async (id, name) => {
+      if (!confirm(`هل أنت متأكد من حذف الطبيب "${name}" من الدليل نهائياً؟`)) return;
+
+      try {
+        const res = await fetch(`/api/admin/doctors/${id}`, {
+          method: 'DELETE',
+          headers: { 'Authorization': `Bearer ${adminState.token}` }
+        });
+        if (res.ok) {
+          showAdminToast('تم حذف الطبيب من الدليل');
+          loadStats();
+          loadDoctorsTable();
+        }
+      } catch (err) {
+        alert('تعذر الحذف: ' + err.message);
+      }
+    };
+
+    // Change Password Form
+    document.getElementById('open-change-pw-btn').addEventListener('click', () => {
+      document.getElementById('change-pw-modal').classList.remove('hidden');
+    });
+    document.getElementById('close-pw-modal-btn').addEventListener('click', () => {
+      document.getElementById('change-pw-modal').classList.add('hidden');
+    });
+
+    document.getElementById('change-pw-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const currentPassword = document.getElementById('cur-pw').value;
+      const newPassword = document.getElementById('new-pw').value;
+
+      try {
+        const res = await fetch('/api/admin/change-password', {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${adminState.token}`
+          },
+          body: JSON.stringify({ currentPassword, newPassword })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+          alert('تم تغيير كلمة المرور بنجاح!');
+          document.getElementById('change-pw-modal').classList.add('hidden');
+          document.getElementById('change-pw-form').reset();
+        } else {
+          alert('خطأ: ' + data.message);
+        }
+      } catch (err) {
+        alert('تعذر التحديث: ' + err.message);
+      }
+    });
+
+    // Initialize
+    checkAuthSession();
+  </script>
+</body>
+</html>

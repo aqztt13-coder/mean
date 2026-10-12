@@ -1,0 +1,22 @@
+{
+  "name": "basra-doctors-directory",
+  "version": "1.0.0",
+  "description": "دليل أطباء البصرة — Basra Doctors Directory",
+  "main": "server/src/server.js",
+  "scripts": {
+    "start": "node server/src/server.js",
+    "seed": "node server/src/seed.js",
+    "dev": "node --watch server/src/server.js"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "sqlite3": "^5.1.7",
+    "xlsx": "^0.18.5"
+  }
+}
